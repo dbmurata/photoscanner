@@ -27,6 +27,9 @@ public class PhotoScannerService {
     @Autowired
     private ThreadPoolTaskExecutor directoryScannerExecutor;
 
+    @Autowired
+    private PhotoRepository photos;
+
     @PostConstruct
     public void init() {
         Exiftool.setExiftoolPath(exiftoolPath);
@@ -35,7 +38,7 @@ public class PhotoScannerService {
     @Scheduled(fixedDelayString = "${photoscanner.scheduler.millis:9000000}")
     public void scanLocations() {
         for (String root: roots) {
-            directoryScannerExecutor.submit(new DirectoryScanner(new File(root), directoryScannerExecutor));
+            directoryScannerExecutor.submit(new DirectoryScanner(new File(root), directoryScannerExecutor, photos));
         }
     }
 }

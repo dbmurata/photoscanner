@@ -1,17 +1,14 @@
 package dbm.photo.scanner.service;
 
-import dbm.photo.scanner.util.Exiftool;
-import dbm.photo.scanner.util.MD5;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.io.File;
 import java.io.IOException;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Map;
-import java.util.Set;
+import java.text.ParseException;
+import java.util.Optional;
 
 public class DirectoryScanner implements Runnable {
 
@@ -19,10 +16,12 @@ public class DirectoryScanner implements Runnable {
 
     private File root;
     private ThreadPoolTaskExecutor directoryScannerExecutor;
+    private PhotoRepository photos;
 
-    public DirectoryScanner(File root, ThreadPoolTaskExecutor directoryScannerExecutor) {
+    DirectoryScanner(File root, ThreadPoolTaskExecutor directoryScannerExecutor, PhotoRepository photos) {
         this.root = root;
         this.directoryScannerExecutor = directoryScannerExecutor;
+        this.photos = photos;
     }
 
     @Override
@@ -30,23 +29,31 @@ public class DirectoryScanner implements Runnable {
         log.info("Scanning directory: {}", root.getAbsolutePath());
         File[] files = root.listFiles();
 
-        for (File file: files) {
-            if (file.isDirectory()) {
-                directoryScannerExecutor.submit(new DirectoryScanner(file, directoryScannerExecutor));
-            }
-            else {
-                try {
-                    log.info("Found file: {}", file.getName());
-                    String md5 = MD5.md5sum(file);
-                    log.info("MD5: {}", md5);
-                    Map<String, String> exif = Exiftool.getMetadata(file);
-                    Set<String> keys = exif.keySet();
-                    for (String key: keys) {
-                        log.info("{} = {}", key, exif.get(key));
-                    } // */
-                }
-                catch (IOException | NoSuchAlgorithmException e) {
-                    e.printStackTrace(System.err);
+        if (files != null) {
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    directoryScannerExecutor.submit(new DirectoryScanner(file, directoryScannerExecutor, photos));
+                } else {
+                    try {
+                        Photo photo = new Photo(file);
+                        if (photos.existsById(photo.id)) {
+                            Optional<Photo> tmp = photos.findById(photo.id);
+                            if (tmp.isPresent()) {
+                                Photo p = tmp.get();
+                                if (!p.files.contains(file.getAbsolutePath())) {
+                                    p.files.add(file.getAbsolutePath());
+
+                                    log.info("Updating {}", file.getAbsolutePath());
+                                    photos.save(p);
+                                }
+                            }
+                        } else {
+                            log.info("Adding {}", file.getAbsolutePath());
+                            photos.save(photo);
+                        }
+                    } catch (IOException | NoSuchAlgorithmException | ParseException e) {
+                        e.printStackTrace(System.err);
+                    }
                 }
             }
         }
