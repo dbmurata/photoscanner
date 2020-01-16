@@ -7,8 +7,9 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class MD5 {
-    public static String md5sum(File file) throws NoSuchAlgorithmException, IOException {
-        MessageDigest digest = MessageDigest.getInstance("MD5");
+
+    private static String cksum(File file, String algorithm) throws NoSuchAlgorithmException, IOException {
+        MessageDigest digest = MessageDigest.getInstance(algorithm);
         FileInputStream fis = new FileInputStream(file);
         byte[] buffer = new byte[4096];
         int nLen;
@@ -26,5 +27,17 @@ public class MD5 {
         }
 
         return sumBuilder.toString();
+    }
+
+    public static String md5sum(File file) throws NoSuchAlgorithmException, IOException {
+        return cksum(file, "MD5");
+    }
+
+    public static String shasum(File file) throws IOException, NoSuchAlgorithmException {
+        return cksum(file, "SHA-1");
+    }
+
+    public static String sha256(File file) throws IOException, NoSuchAlgorithmException {
+        return cksum(file, "SHA-256");
     }
 }
