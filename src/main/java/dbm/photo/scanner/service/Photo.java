@@ -29,5 +29,6 @@ class Photo {
         files = new ArrayList<>();
         files.add(file.getAbsolutePath());
         exif = Exiftool.getMetadata(file);
+        log.info("{} is done pulling data", file.getName());
     }
 }
