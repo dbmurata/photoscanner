@@ -14,10 +14,14 @@ public class CKSUM {
         byte[] buffer = new byte[4096];
         int nLen;
 
-        while ((nLen = fis.read(buffer)) > 0)
+        while ((nLen = fis.read(buffer)) > 0) {
+            System.err.println("Length: " + nLen);
             digest.update(buffer, 0, nLen);
+        }
+        System.err.println("Out of loop");
         if (nLen > 0)
             digest.update(buffer, 0, nLen);
+        System.err.println("Digesting...");
         byte[] sum = digest.digest();
         StringBuilder sumBuilder = new StringBuilder();
         for (byte b: sum) {
