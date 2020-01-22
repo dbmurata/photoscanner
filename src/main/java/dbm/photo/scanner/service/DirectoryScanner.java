@@ -34,6 +34,7 @@ public class DirectoryScanner implements Runnable {
                 if (file.isDirectory()) {
                     directoryScannerExecutor.submit(new DirectoryScanner(file, directoryScannerExecutor, photos));
                 } else {
+                    log.info("Checking file {}", file.getAbsolutePath());
                     try {
                         Photo photo = new Photo(file);
                         if (photos.existsById(photo.id)) {
@@ -52,6 +53,7 @@ public class DirectoryScanner implements Runnable {
                             photos.save(photo);
                         }
                     } catch (IOException | NoSuchAlgorithmException | ParseException e) {
+                        log.error(e.getMessage());
                         e.printStackTrace(System.err);
                     }
                 }
