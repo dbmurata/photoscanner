@@ -25,7 +25,8 @@ class Photo {
 
     Photo(File file) throws NoSuchAlgorithmException, IOException, ParseException {
         id = CKSUM.md5sum(file);
-        files = new ArrayList<String>();
+        log.info("{} has checksum {}", file.getName(), id);
+        files = new ArrayList<>();
         files.add(file.getAbsolutePath());
         exif = Exiftool.getMetadata(file);
     }
