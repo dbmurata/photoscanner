@@ -18,14 +18,14 @@ class Photo {
     private static final Logger log = LoggerFactory.getLogger(Photo.class);
 
     @Id
-    String id;
+    String checksum;
 
     List<String> files;
     Map<String, Object> exif;
 
     Photo(File file) throws NoSuchAlgorithmException, IOException, ParseException {
-        id = CKSUM.md5sum(file);
-        log.info("{} has checksum {}", file.getName(), id);
+        checksum = CKSUM.md5sum(file);
+        log.info("{} has checksum {}", file.getName(), checksum);
         files = new ArrayList<>();
         files.add(file.getAbsolutePath());
         exif = Exiftool.getMetadata(file);
