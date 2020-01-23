@@ -40,7 +40,7 @@ public class DirectoryScanner implements Runnable {
                         if (photos.existsById(photo.checksum)) {
                             log.info("{} exists.", file.getName());
                             Optional<Photo> tmp = photos.findById(photo.checksum);
-                            log.info("Is present: {}", tmp.isPresent());
+                            log.info("Pulled");
                             if (tmp.isPresent()) {
                                 Photo p = tmp.get();
                                 if (!p.files.contains(file.getAbsolutePath())) {
