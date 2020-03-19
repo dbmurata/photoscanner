@@ -3,11 +3,14 @@ package dbm.photo.scanner.service;
 //import org.springframework.data.mongodb.repository.MongoRepository;
 
 import com.mongodb.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.UnknownHostException;
 //import java.util.Optional;
 
 class PhotoRepository { //extends MongoRepository<Photo, String> {
+    private static final Logger log = LoggerFactory.getLogger(PhotoRepository.class);
 
     private MongoClient mongoClient;
     private DB database;
@@ -20,6 +23,7 @@ class PhotoRepository { //extends MongoRepository<Photo, String> {
     }
 
     public Photo findById(String checksum) {
+        log.info("Looking for checksum {}", checksum);
         DBObject query = new BasicDBObject("_id", checksum);
         DBObject photo = collection.find(query).one();
         new Photo(photo);
