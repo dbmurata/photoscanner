@@ -29,7 +29,7 @@ public class PhotoScannerService {
     private String mongoServer;
 
     @Value("${photoscanner.mongodb.port:27017")
-    private int mongoPort;
+    private String mongoPort;
 
     @Autowired
     private ThreadPoolTaskExecutor directoryScannerExecutor;
@@ -41,7 +41,7 @@ public class PhotoScannerService {
     public void init() {
         Exiftool.setExiftoolPath(exiftoolPath);
         try {
-            photos = new PhotoRepository(mongoServer, mongoPort);
+            photos = new PhotoRepository(mongoServer, Integer.parseInt(mongoPort));
         } catch (UnknownHostException e) {
             log.error(e.getMessage());
         }
