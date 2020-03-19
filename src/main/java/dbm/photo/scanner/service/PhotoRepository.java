@@ -18,7 +18,7 @@ class PhotoRepository { //extends MongoRepository<Photo, String> {
 
     public PhotoRepository(String hostname, int port) throws UnknownHostException {
         mongoClient = new MongoClient(new MongoClientURI("mongodb://" + hostname + ":" + port));
-        database = mongoClient.getDB("test");
+        database = mongoClient.getDB("photoscanner");
         collection = database.getCollection("photo");
     }
 
@@ -31,6 +31,10 @@ class PhotoRepository { //extends MongoRepository<Photo, String> {
     }
 
     public boolean existsById(String checksum) {
+        log.info("Looking for checksum {}", checksum);
+        DBObject query = new BasicDBObject("_id", checksum);
+        DBObject photo = collection.find(query).one();
+        new Photo(photo);
         return false;
     }
 
