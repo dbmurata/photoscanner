@@ -22,6 +22,7 @@ class PhotoRepository { //extends MongoRepository<Photo, String> {
     public Photo findById(String checksum) {
         DBObject query = new BasicDBObject("_id", checksum);
         DBObject photo = collection.find(query).one();
+        new Photo(photo);
         return null;
     }
 
