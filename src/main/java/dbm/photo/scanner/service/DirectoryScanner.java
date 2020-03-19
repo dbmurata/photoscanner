@@ -38,7 +38,7 @@ public class DirectoryScanner implements Runnable {
                     try {
                         Photo photo = new Photo(file);
                         if (photos.existsById(photo.checksum)) {
-                            log.info("{} exists with checksum {}", file.getName(), photo.checksum);
+                            log.info("Found that {} exists with checksum {}", file.getName(), photo.checksum);
                             //Optional<Photo> tmp = photos.findById(photo.checksum);
                             Photo p = photos.findById(photo.checksum);
                             log.info("Pulled");
