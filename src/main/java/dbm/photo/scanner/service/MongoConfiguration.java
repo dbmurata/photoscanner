@@ -8,11 +8,14 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class MongoConfiguration {
 
-    @Value("${photoscanner.mongodb.server:localhost}")
-    private String mongoServer;
 
-    public @Bean
-    MongoClient mongoClient() {
-        return new MongoClient(mongoServer);
-    }
+    //@Value("${photoscanner.mongodb.server:localhost}")
+    //private String mongoServer;
+
+    //@Value("${photoscanner.mongodb.port:27017")
+    //private int mongoPort;
+    //public @Bean
+    //MongoClient mongoClient() {
+    //    return new MongoClient(mongoServer);
+    //}
 }
