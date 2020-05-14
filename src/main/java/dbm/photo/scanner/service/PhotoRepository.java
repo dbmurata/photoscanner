@@ -35,7 +35,9 @@ class PhotoRepository { //extends MongoRepository<Photo, String> {
     public boolean existsById(String checksum) {
         log.info("Looking for checksum {}", checksum);
         DBObject query = new BasicDBObject("_id", checksum);
+        log.info("Query: {}", query.toString());
         DBObject photo = collection.find(query).one();
+        log.info("Found");
         new Photo(photo);
         return false;
     }
