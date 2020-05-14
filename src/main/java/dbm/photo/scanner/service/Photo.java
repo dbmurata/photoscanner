@@ -58,6 +58,7 @@ class Photo {
             }
             json.append("}");
         }
+        json.append("}");
 
         return json.toString();
     }
