@@ -35,12 +35,9 @@ class Photo {
         checksum = (String)obj.get("_id");
         log.info("Found checksum {}", checksum);
         files = (ArrayList)obj.get("files");
-        log.info("Found array: {}", files.getClass().getName());
-        for (Object file: files) {
-            log.info(" -- {}", file.toString());
-        }
-        Object e = obj.get("exif");
-        log.info("Found exif: {}", e.getClass().getName());
+        exif = (Map)obj.get("exif");
+
+        log.info("Loaded photo {}", checksum);
     }
 
     public String toJSON() {
