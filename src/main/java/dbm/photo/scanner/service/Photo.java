@@ -19,7 +19,7 @@ class Photo {
     //@Id
     String checksum;
 
-    List<String> files;
+    ArrayList<Object> files;
     Map<String, Object> exif;
 
     Photo(File file) throws NoSuchAlgorithmException, IOException, ParseException {
@@ -34,8 +34,13 @@ class Photo {
     protected Photo(DBObject obj) {
         checksum = (String)obj.get("_id");
         log.info("Found checksum {}", checksum);
-        Object fls = obj.get("files");
-        log.info("Found array: {}", fls.getClass().getName());
+        files = (ArrayList)obj.get("files");
+        log.info("Found array: {}", files.getClass().getName());
+        for (Object file: files) {
+            log.info(" -- {}", file.toString());
+        }
+        Object e = obj.get("exif");
+        log.info("Found exif: {}", e.getClass().getName());
     }
 
     public String toJSON() {
@@ -43,7 +48,7 @@ class Photo {
 
         json.append("{\"_id\":\"").append(checksum).append("\",\"files\":[");
         for (int i = 0; i < files.size(); i++) {
-            json.append("\"").append(files.get(i)).append("\"");
+            json.append("\"").append(files.get(i).toString()).append("\"");
             if (i < files.size() - 1) json.append(",");
         }
         json.append("]");
