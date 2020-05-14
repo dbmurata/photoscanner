@@ -37,7 +37,10 @@ class PhotoRepository { //extends MongoRepository<Photo, String> {
         DBObject query = new BasicDBObject("_id", checksum);
         log.info("Query: {}", query.toString());
         DBObject photo = collection.find(query).one();
-        log.info("Found: {}", photo.toString());
+        if (photo != null)
+            log.info("Found: {}", photo.toString());
+        else
+            log.info("Found: null");
         new Photo(photo);
         return false;
     }
