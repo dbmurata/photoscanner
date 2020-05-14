@@ -27,8 +27,9 @@ class PhotoRepository { //extends MongoRepository<Photo, String> {
     public Photo findById(String checksum) {
         log.info("Looking for checksum {}", checksum);
         DBObject query = new BasicDBObject("_id", checksum);
-        DBObject photo = collection.find(query).one();
-        new Photo(photo);
+        DBObject photo = collection.findOne(query);
+        if (photo != null)
+            return new Photo(photo);
         return null;
     }
 
@@ -36,16 +37,18 @@ class PhotoRepository { //extends MongoRepository<Photo, String> {
         log.info("Looking for checksum {}", checksum);
         DBObject query = new BasicDBObject("_id", checksum);
         log.info("Query: {}", query.toString());
-        DBObject photo = collection.find(query).one();
-        if (photo != null)
+        DBObject photo = collection.findOne(query);
+        /*if (photo != null)
             log.info("Found: {}", photo.toString());
         else
             log.info("Found: null");
-        new Photo(photo);
-        return false;
+        new Photo(photo); // */
+        return photo != null;
     }
 
     public void save(Photo photo) {
-
+        DBObject query = new BasicDBObject("_id", photo.checksum);
+        DBObject p = (DBObject)JSON.parse(photo.toJSON());
+        collection.update(query, p, true, false);
     }
 }

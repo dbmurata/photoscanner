@@ -11,9 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 class Photo {
     private static final Logger log = LoggerFactory.getLogger(Photo.class);
@@ -38,5 +36,29 @@ class Photo {
         log.info("Found checksum {}", checksum);
         Object fls = obj.get("files");
         log.info("Found array: {}", fls.getClass().getName());
+    }
+
+    public String toJSON() {
+        StringBuilder json = new StringBuilder();
+
+        json.append("{\"_id\":\"").append(checksum).append("\",\"files\":[");
+        for (int i = 0; i < files.size(); i++) {
+            json.append("\"").append(files.get(i)).append("\"");
+            if (i < files.size() - 1) json.append(",");
+        }
+        json.append("]");
+        if (exif != null) {
+            json.append(",\"exif\":{");
+            Set<String> keyset = exif.keySet();
+            Iterator<String> keys = keyset.iterator();
+            while (keys.hasNext()) {
+                String key = keys.next();
+                json.append("\"").append(key).append("\":\"").append(exif.get(key).toString()).append("\"");
+                if (keys.hasNext()) json.append(",");
+            }
+            json.append("}");
+        }
+
+        return json.toString();
     }
 }
