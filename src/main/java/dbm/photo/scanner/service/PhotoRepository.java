@@ -47,7 +47,9 @@ class PhotoRepository { //extends MongoRepository<Photo, String> {
     }
 
     public void save(Photo photo) {
+        log.info("In save()");
         DBObject query = new BasicDBObject("_id", photo.checksum);
+        log.info("Query built");
         DBObject p = (DBObject)JSON.parse(photo.toJSON());
         log.info("Upserting {}", photo.toJSON());
         collection.update(query, p, true, false);
