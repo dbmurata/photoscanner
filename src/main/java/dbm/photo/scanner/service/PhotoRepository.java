@@ -17,6 +17,7 @@ class PhotoRepository { //extends MongoRepository<Photo, String> {
     private DBCollection collection;
 
     public PhotoRepository(String hostname, int port) throws UnknownHostException {
+        log.info("Connecting to " + hostname + ":" + port);
         mongoClient = new MongoClient(new MongoClientURI("mongodb://" + hostname + ":" + port));
         database = mongoClient.getDB("photoscanner");
         collection = database.getCollection("photo");
