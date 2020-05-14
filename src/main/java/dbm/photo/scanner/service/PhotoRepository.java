@@ -3,6 +3,7 @@ package dbm.photo.scanner.service;
 //import org.springframework.data.mongodb.repository.MongoRepository;
 
 import com.mongodb.*;
+import com.mongodb.util.JSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,6 +22,9 @@ class PhotoRepository { //extends MongoRepository<Photo, String> {
         mongoClient = new MongoClient(new MongoClientURI("mongodb://" + hostname + ":" + port));
         database = mongoClient.getDB("photoscanner");
         collection = database.getCollection("photo");
+        DBObject json = (DBObject) JSON.parse("{\"name\":\"I am a circle\"}");
+        log.info("Writing data...");
+        collection.insert(json);
     }
 
     public Photo findById(String checksum) {
