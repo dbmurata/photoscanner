@@ -45,5 +45,6 @@ class PhotoRepository { //extends MongoRepository<Photo, String> {
         log.info("Saving {}", ((BasicDBList)(photo.get("files"))).get(0));
         //DBObject p = (DBObject)JSON.parse(photo.toJSON());
         collection.update(new BasicDBObject("_id", photo.get("checksum")), photo, true, false);
+        log.info("Saved");
     }
 }
