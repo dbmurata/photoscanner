@@ -1,5 +1,6 @@
 package dbm.photo.scanner.service;
 
+import com.mongodb.BasicDBList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -34,18 +35,16 @@ public class DirectoryScanner implements Runnable {
                 if (file.isDirectory()) {
                     directoryScannerExecutor.submit(new DirectoryScanner(file, directoryScannerExecutor, photos));
                 } else {
-                    log.info("Checking file {}", file.getAbsolutePath());
                     try {
                         Photo photo = new Photo(file);
-                        if (photos.existsById(photo.checksum)) {
-                            log.info("Found that {} exists with checksum {}", file.getName(), photo.checksum);
+                        if (photos.exists(photo)) {
+                            //log.info("Found that {} exists with checksum {}", file.getName(), photo.get("checksum"));
                             //Optional<Photo> tmp = photos.findById(photo.checksum);
-                            Photo p = photos.findById(photo.checksum);
-                            log.info("Pulled");
+                            Photo p = photos.find(photo);
                             //if (tmp.isPresent()) {
                             //    Photo p = tmp.get();
-                                if (!p.files.contains(file.getAbsolutePath())) {
-                                    p.files.add(file.getAbsolutePath());
+                                if (!p.hasFilePath(file.getAbsolutePath())) {
+                                    p.addFilePath(file.getAbsolutePath());
 
                                     log.info("Updating {}", file.getAbsolutePath());
                                     photos.save(p);

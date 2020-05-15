@@ -1,5 +1,7 @@
 package dbm.photo.scanner.service;
 
+import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import dbm.photo.scanner.util.Exiftool;
 import dbm.photo.scanner.util.CKSUM;
@@ -13,34 +15,36 @@ import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.util.*;
 
-class Photo {
+class Photo extends BasicDBObject {
     private static final Logger log = LoggerFactory.getLogger(Photo.class);
 
-    //@Id
-    String checksum;
-
-    ArrayList<Object> files;
-    Map<String, Object> exif;
-
     Photo(File file) throws NoSuchAlgorithmException, IOException, ParseException {
-        checksum = CKSUM.md5sum(file);
-        log.info("{} has checksum {}", file.getName(), checksum);
-        files = new ArrayList<>();
+        put("checksum", CKSUM.md5sum(file));
+        BasicDBList files = new BasicDBList();
         files.add(file.getAbsolutePath());
-        exif = Exiftool.getMetadata(file);
-        log.info("{} is done pulling data", file.getName());
+        put("files", files);
+        Map<String, Object> exif = Exiftool.getMetadata(file);
+        if (exif != null) {
+            put("exif", new BasicDBObject(exif));
+        }
     }
 
     protected Photo(DBObject obj) {
-        checksum = (String)obj.get("_id");
-        log.info("Found checksum {}", checksum);
+        super(obj.toMap());
+        /*checksum = (String)obj.get("_id");
         files = (ArrayList)obj.get("files");
-        exif = (Map)obj.get("exif");
-
-        log.info("Loaded photo {}", checksum);
+        exif = (Map)obj.get("exif"); // */
     }
 
-    public String toJSON() {
+    public boolean hasFilePath(String path) {
+        return ((BasicDBList)(get("files"))).contains(path);
+    }
+
+    public void addFilePath(String path) {
+        ((BasicDBList)(get("files"))).add(path);
+    }
+
+    /*public String toJSON() {
         StringBuilder json = new StringBuilder();
 
         json.append("{\"_id\":\"").append(checksum).append("\",\"files\":[");
@@ -63,5 +67,5 @@ class Photo {
         json.append("}");
 
         return json.toString();
-    }
+    } // */
 }

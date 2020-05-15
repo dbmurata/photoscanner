@@ -25,31 +25,25 @@ class PhotoRepository { //extends MongoRepository<Photo, String> {
     }
 
     public Photo findById(String checksum) {
-        log.info("Looking for checksum {}", checksum);
-        DBObject query = new BasicDBObject("_id", checksum);
-        DBObject photo = collection.findOne(query);
-        if (photo != null)
-            return new Photo(photo);
-        return null;
+        DBObject photo = collection.findOne(new BasicDBObject("_id", checksum));
+        return photo == null ? null : new Photo(photo);
+    }
+
+    public Photo find(Photo photo) {
+        return findById(photo.get("checksum").toString());
     }
 
     public boolean existsById(String checksum) {
-        log.info("Looking for checksum {}", checksum);
-        DBObject query = new BasicDBObject("_id", checksum);
-        log.info("Query: {}", query.toString());
-        DBObject photo = collection.findOne(query);
-        /*if (photo != null)
-            log.info("Found: {}", photo.toString());
-        else
-            log.info("Found: null");
-        new Photo(photo); // */
-        return photo != null;
+        return collection.findOne(new BasicDBObject("_id", checksum)) != null;
+    }
+
+    public boolean exists(Photo photo) {
+        return existsById(photo.get("checksum").toString());
     }
 
     public void save(Photo photo) {
-        log.info("Saving {}", photo.checksum);
-        DBObject query = new BasicDBObject("_id", photo.checksum);
-        DBObject p = (DBObject)JSON.parse(photo.toJSON());
-        collection.update(query, p, true, false);
+        log.info("Saving {}", ((BasicDBList)(photo.get("files"))).get(0));
+        //DBObject p = (DBObject)JSON.parse(photo.toJSON());
+        collection.update(new BasicDBObject("_id", photo.get("checksum")), photo, true, false);
     }
 }
