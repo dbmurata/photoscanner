@@ -19,7 +19,7 @@ class Photo extends BasicDBObject {
     private static final Logger log = LoggerFactory.getLogger(Photo.class);
 
     Photo(File file) throws NoSuchAlgorithmException, IOException, ParseException {
-        put("checksum", CKSUM.md5sum(file));
+        put("_id", CKSUM.md5sum(file));
         BasicDBList files = new BasicDBList();
         files.add(file.getAbsolutePath());
         put("files", files);
@@ -34,6 +34,10 @@ class Photo extends BasicDBObject {
         /*checksum = (String)obj.get("_id");
         files = (ArrayList)obj.get("files");
         exif = (Map)obj.get("exif"); // */
+    }
+
+    public String getChecksum() {
+        return get("_id").toString();
     }
 
     public boolean hasFilePath(String path) {

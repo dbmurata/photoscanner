@@ -30,7 +30,7 @@ class PhotoRepository { //extends MongoRepository<Photo, String> {
     }
 
     public Photo find(Photo photo) {
-        return findById(photo.get("checksum").toString());
+        return findById(photo.get("_id").toString());
     }
 
     public boolean existsById(String checksum) {
@@ -38,12 +38,12 @@ class PhotoRepository { //extends MongoRepository<Photo, String> {
     }
 
     public boolean exists(Photo photo) {
-        return existsById(photo.get("checksum").toString());
+        return existsById(photo.get("_id").toString());
     }
 
     public void save(Photo photo) {
         log.info("Saving {}", ((BasicDBList)(photo.get("files"))).get(0));
-        DBObject query = new BasicDBObject("_id", photo.get("checksum").toString());
+        DBObject query = new BasicDBObject("_id", photo.get("_id").toString());
         log.info("Write photo: {}", photo.toString());
         //DBObject p = (DBObject)JSON.parse(photo.toJSON());
         collection.update(query, photo, true, false);
