@@ -43,7 +43,7 @@ class PhotoRepository { //extends MongoRepository<Photo, String> {
 
     public void save(Photo photo) {
         log.info("Saving {}", ((BasicDBList)(photo.get("files"))).get(0));
-        DBObject query = new BasicDBObject("_id", photo.get("checksum"));
+        DBObject query = new BasicDBObject("_id", photo.get("checksum").toString());
         log.info("Write photo: {}", photo.toString());
         //DBObject p = (DBObject)JSON.parse(photo.toJSON());
         collection.update(query, photo, true, false);
