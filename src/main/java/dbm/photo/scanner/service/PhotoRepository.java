@@ -42,11 +42,11 @@ class PhotoRepository { //extends MongoRepository<Photo, String> {
     }
 
     public void save(Photo photo) {
-        log.info("Saving {}", ((BasicDBList)(photo.get("files"))).get(0));
+        //log.info("Saving {}", ((BasicDBList)(photo.get("files"))).get(0));
         DBObject query = new BasicDBObject("_id", photo.get("_id").toString());
-        log.info("Write photo: {}", photo.toString());
+        //log.info("Write photo: {}", photo.toString());
         //DBObject p = (DBObject)JSON.parse(photo.toJSON());
         collection.update(query, photo, true, false);
-        log.info("Saved");
+        //log.info("Saved");
     }
 }
