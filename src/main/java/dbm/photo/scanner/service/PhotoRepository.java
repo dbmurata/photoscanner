@@ -48,6 +48,6 @@ class PhotoRepository { //extends MongoRepository<Photo, String> {
         log.info("Write photo: {}", photo.toString());
         //DBObject p = (DBObject)JSON.parse(photo.toJSON());
         collection.update(query, photo, true, false);
-        //log.info("Saved");
+        log.info("Saved");
     }
 }
