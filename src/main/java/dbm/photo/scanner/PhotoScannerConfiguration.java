@@ -16,14 +16,23 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class PhotoScannerConfiguration {
     private static final Logger log = LoggerFactory.getLogger(PhotoScannerConfiguration.class);
 
-    @Value("${photoscanner.thread.directory.corePoolSize:8}")
+    @Value("${photoscanner.thread.directory.corePoolSize:4}")
     private int directoryCorePoolSize;
 
-    @Value("${photoscanner.thread.directory.maxPoolSize:16}")
+    @Value("${photoscanner.thread.directory.maxPoolSize:8}")
     private int directoryMaxPoolSize;
 
     @Value("${photoscanner.thread.directory.queueCapacity:1000000}")
     private int directoryQueueCapacity;
+
+    @Value("${photoscanner.thread.file.corePoolSize:16}")
+    private int fileCorePoolSize;
+
+    @Value("${photoscanner.thread.file.maxPoolSize:32}")
+    private int fileMaxPoolSize;
+
+    @Value("${photoscanner.thread.file.queueCapacity:1000000}")
+    private int fileQueueCapacity;
 
     @Bean
     public ThreadPoolTaskExecutor directoryScannerExecutor() {
@@ -34,6 +43,19 @@ public class PhotoScannerConfiguration {
         executor.setQueueCapacity(directoryQueueCapacity);
         executor.setThreadNamePrefix("directoryScannerEx-");
         executor.setRejectedExecutionHandler(new ThreadPoolRejectedExecutionHandler(executor.getThreadNamePrefix(), executor.getCorePoolSize(), executor.getMaxPoolSize(), directoryQueueCapacity));
+        executor.initialize();
+        return executor;
+    }
+
+    @Bean
+    public ThreadPoolTaskExecutor fileProcessorExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        log.info("fileProcessorExecutor - using thread options:\n corePoolSize: {}\n maxPoolSize: {}\nqueueCapacity: {}\n", fileCorePoolSize, fileMaxPoolSize, fileQueueCapacity);
+        executor.setCorePoolSize(fileCorePoolSize);
+        executor.setMaxPoolSize(fileMaxPoolSize);
+        executor.setQueueCapacity(fileQueueCapacity);
+        executor.setThreadNamePrefix("fileProcessorEx-");
+        executor.setRejectedExecutionHandler(new ThreadPoolRejectedExecutionHandler(executor.getThreadNamePrefix(), executor.getCorePoolSize(), executor.getMaxPoolSize(), fileQueueCapacity));
         executor.initialize();
         return executor;
     }

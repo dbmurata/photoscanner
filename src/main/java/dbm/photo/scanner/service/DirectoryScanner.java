@@ -1,15 +1,10 @@
 package dbm.photo.scanner.service;
 
-import com.mongodb.BasicDBList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.io.File;
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-import java.text.ParseException;
-import java.util.Optional;
 
 public class DirectoryScanner implements Runnable {
 
@@ -17,49 +12,32 @@ public class DirectoryScanner implements Runnable {
 
     private File root;
     private ThreadPoolTaskExecutor directoryScannerExecutor;
+    private ThreadPoolTaskExecutor fileProcessorExecutor;
     private PhotoRepository photos;
+    private String prefix;
 
-    DirectoryScanner(File root, ThreadPoolTaskExecutor directoryScannerExecutor, PhotoRepository photos) {
+    public DirectoryScanner(File root, ThreadPoolTaskExecutor directoryScannerExecutor, ThreadPoolTaskExecutor fileProcessorExecutor, PhotoRepository photos, String prefix) {
         this.root = root;
         this.directoryScannerExecutor = directoryScannerExecutor;
+        this.fileProcessorExecutor = fileProcessorExecutor;
         this.photos = photos;
+
+        this.prefix = prefix;
     }
 
     @Override
     public void run() {
         log.info("Scanning directory: {}", root.getAbsolutePath());
         File[] files = root.listFiles();
-
         if (files != null) {
             for (File file : files) {
                 if (file.isDirectory()) {
-                    directoryScannerExecutor.submit(new DirectoryScanner(file, directoryScannerExecutor, photos));
+                    directoryScannerExecutor.submit(new DirectoryScanner(file, directoryScannerExecutor, fileProcessorExecutor, photos, prefix + " "));
                 } else {
-                    try {
-                        Photo photo = new Photo(file);
-                        if (photos.exists(photo)) {
-                            //log.info("Found that {} exists with checksum {}", file.getName(), photo.get("checksum"));
-                            //Optional<Photo> tmp = photos.findById(photo.checksum);
-                            Photo p = photos.find(photo);
-                            //if (tmp.isPresent()) {
-                            //    Photo p = tmp.get();
-                                if (!p.hasFilePath(file.getAbsolutePath())) {
-                                    p.addFilePath(file.getAbsolutePath());
-
-                                    log.info("Updating {}", file.getAbsolutePath());
-                                    photos.save(p);
-                                }
-                            //}
-                        } else {
-                            log.info("Adding {}", file.getAbsolutePath());
-                            photos.save(photo);
-                        }
-                    } catch (IOException | NoSuchAlgorithmException | ParseException e) {
-                        log.error(e.getMessage());
-                        e.printStackTrace(System.err);
-                    }
+                    fileProcessorExecutor.submit(new FileProcessor(file, fileProcessorExecutor, photos, prefix + " "));
                 }
             }
         }
     }
+
 }

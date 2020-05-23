@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
-import java.net.UnknownHostException;
 import java.util.List;
 
 @Service
@@ -25,32 +24,24 @@ public class PhotoScannerService {
     @Value("${photoscanner.exiftool.path:exiftool}")
     private String exiftoolPath;
 
-    @Value("${photoscanner.mongodb.server:localhost}")
-    private String mongoServer;
-
-    @Value("${photoscanner.mongodb.port:27017}")
-    private int mongoPort;
-
     @Autowired
     private ThreadPoolTaskExecutor directoryScannerExecutor;
 
-    //@Autowired
+    @Autowired
+    private ThreadPoolTaskExecutor fileProcessorExecutor;
+
+    @Autowired
     private PhotoRepository photos;
 
     @PostConstruct
     public void init() {
         Exiftool.setExiftoolPath(exiftoolPath);
-        try {
-            photos = new PhotoRepository(mongoServer, mongoPort);
-        } catch (UnknownHostException e) {
-            log.error(e.getMessage());
-        }
     }
 
-    @Scheduled(fixedDelayString = "${photoscanner.scheduler.millis:9000000}")
+    @Scheduled(fixedDelayString = "${photoscanner.scheduler.millis:900000}")
     public void scanLocations() {
         for (String root: roots) {
-            directoryScannerExecutor.submit(new DirectoryScanner(new File(root), directoryScannerExecutor, photos));
+            directoryScannerExecutor.submit(new DirectoryScanner(new File(root), directoryScannerExecutor, fileProcessorExecutor, photos, ""));
         }
     }
 }

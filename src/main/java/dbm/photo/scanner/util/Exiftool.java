@@ -13,7 +13,7 @@ public class Exiftool {
     private static String exifPath = "exiftool";
 
     private static SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss.SS");
-    private static SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy:MM:dd HH:mm:ssZZZZZ");
+    private static SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy:MM:dd HH:mm:ssX");
     private static Pattern date1 = Pattern.compile("^[0-9]{4}:[0-9]{2}:[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]*$");
     private static Pattern date2 = Pattern.compile("^[0-9]{4}:[0-9]{2}:[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}-[0-9]{2}:[0-9]*$");
 
@@ -61,8 +61,8 @@ public class Exiftool {
                 }
                 else if (!v.matches("^[0-9]{4}:[0-9]{2}:[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]*$")) {
                     v += ".00";
+                    data.put(key, sdf1.parse(v));
                 }
-                data.put(key, sdf1.parse(v));
             }
             else if (key.equals("File Access Date/Time") ||
                 key.equals("File Creation Date/Time") ||
