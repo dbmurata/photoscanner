@@ -24,6 +24,9 @@ public class PhotoScannerService {
     @Value("${photoscanner.exiftool.path:exiftool}")
     private String exiftoolPath;
 
+    @Value("${photoscanner.directoryscanner.enabled:true}")
+    private boolean directoryScannerEnabled;
+
     @Autowired
     private ThreadPoolTaskExecutor directoryScannerExecutor;
 
@@ -40,6 +43,11 @@ public class PhotoScannerService {
 
     @Scheduled(fixedDelayString = "${photoscanner.scheduler.millis:900000}")
     public void scanLocations() {
+        if (!directoryScannerEnabled) {
+            log.info("Directory scanner is not enabled.");
+            return;
+        }
+
         for (String root: roots) {
             directoryScannerExecutor.submit(new DirectoryScanner(new File(root), directoryScannerExecutor, fileProcessorExecutor, photos, ""));
         }
