@@ -33,7 +33,7 @@ public class ScannerAPIController {
         //return "{ \"a\": \"testing...\" }";
     }
 
-    @GetMapping("/media")
+    /*@GetMapping("/media")
     public void getMedia(HttpServletResponse response) {
         Optional<Photo> photo =  photos.findById("01f7a5f227d4b00bc76b002175725dcf");
         if (photo.isPresent()) {
@@ -56,5 +56,5 @@ public class ScannerAPIController {
                 return;
             }
         }
-    }
+    } // */
 }
