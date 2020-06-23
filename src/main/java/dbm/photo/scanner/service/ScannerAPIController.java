@@ -24,7 +24,7 @@ public class ScannerAPIController {
     @Autowired
     private PhotoRepository photos;
 
-    @GetMapping("/greeting")
+    @RequestMapping("/greeting")
     public Photo greeting() { // HttpServletResponse response) {
         //response.addHeader("Access-Control-Allow-Origin", "http://localhost:8080");
         Optional<Photo> photo =  photos.findById("01f7a5f227d4b00bc76b002175725dcf");
